@@ -2,7 +2,6 @@ import {Component} from 'react'
 import Loader from 'react-loader-spinner'
 import Cookies from 'js-cookie'
 
-
 import ProductCard from '../ProductCard'
 import ProductsHeader from '../ProductsHeader'
 import FiltersGroup from '../FiltersGroup'
@@ -82,16 +81,27 @@ class AllProductsSection extends Component {
   }
 
   getProducts = async () => {
-    const {searchInput, activeCategoryId, activeRatingId, activeOptionId} =
-      this.state
+    const {
+      searchInput,
+      activeCategoryId,
+      activeRatingId,
+      activeOptionId,
+    } = this.state
     this.setState({
       isLoading: true,
       isError: false,
     })
     const jwtToken = Cookies.get('jwt_token')
 
+    const queryParams = new URLSearchParams({
+      sort_by: activeOptionId,
+      category: activeCategoryId,
+      rating: activeRatingId,
+      title_search: searchInput,
+    })
+
     // TODO: Update the code to get products with filters applied
-    const apiUrl = `https://apis.ccbp.in/products?sort_by=${activeOptionId}`
+    const apiUrl = `https://apis.ccbp.in/products?${queryParams}`
     const options = {
       headers: {
         Authorization: `Bearer ${jwtToken}`,
@@ -118,6 +128,12 @@ class AllProductsSection extends Component {
         isError: true,
         isLoading: false,
       })
+    }
+  }
+
+  onSearch = event => {
+    if (event.key === 'Enter') {
+      this.getProducts()
     }
   }
 
@@ -184,19 +200,17 @@ class AllProductsSection extends Component {
     )
   }
 
-  renderNoProductsView = () => {
-    return (
-      <div>
-        <img
-          src="https://assets.ccbp.in/frontend/react-js/nxt-trendz/nxt-trendz-no-products-view.png"
-          alt="no products"
-          className="noProducts"
-        />
-        <h1>No Products Found</h1>
-        <p>We Could Not find other products. Try other filters</p>
-      </div>
-    )
-  }
+  renderNoProductsView = () => (
+    <div>
+      <img
+        src="https://assets.ccbp.in/frontend/react-js/nxt-trendz/nxt-trendz-no-products-view.png"
+        alt="no products"
+        className="noProducts"
+      />
+      <h1>No Products Found</h1>
+      <p>We Could Not find other products. Try other filters</p>
+    </div>
+  )
 
   renderLoader = () => (
     <div className="products-loader-container">
@@ -205,22 +219,20 @@ class AllProductsSection extends Component {
   )
 
   // TODO: Add failure view
-  renderFailureView = () => {
-    return (
-      <div>
-        <img
-          src="https://assets.ccbp.in/frontend/react-js/nxt-trendz/nxt-trendz-products-error-view.png"
-          alt="products failure"
-          className="failure"
-        />
-        <h1>Oops! Something Went Wrong</h1>
-        <p>
-          We are having some trouble processing your request.
-          <br /> Please try again.
-        </p>
-      </div>
-    )
-  }
+  renderFailureView = () => (
+    <div>
+      <img
+        src="https://assets.ccbp.in/frontend/react-js/nxt-trendz/nxt-trendz-products-error-view.png"
+        alt="products failure"
+        className="failure"
+      />
+      <h1>Oops! Something Went Wrong</h1>
+      <p>
+        We are having some trouble processing your request.
+        <br /> Please try again.
+      </p>
+    </div>
+  )
 
   render() {
     const {isLoading, isError} = this.state
@@ -244,6 +256,8 @@ class AllProductsSection extends Component {
           onClickCategory={this.onClickCategory}
           onClickRating={this.onClickRating}
           onClickFiltersClear={this.onClickFiltersClear}
+          onChangeSearchInput={this.onChangeSearchInput}
+          onSearch={this.onSearch}
         />
 
         <div>{content}</div>

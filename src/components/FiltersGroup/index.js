@@ -3,15 +3,24 @@ import './index.css'
 const FiltersGroup = props => {
   const {
     categoriesList,
-    ratingList,
+    ratingsList,
     onClickCategory,
     onClickRating,
     onClickFiltersClear,
+    onChangeSearchInput,
+    searchInput,
+    onSearch,
   } = props
   return (
     <div className="filters-group-container">
       <h1>Filters Group</h1>
-      <p>Category</p>
+      <input
+        type="search"
+        value={searchInput}
+        onChange={onChangeSearchInput}
+        onKeyDown={onSearch}
+      />
+      <h1>Category</h1>
       <ul>
         {categoriesList.map(eachCategory => (
           <li key={eachCategory.categoryId}>
@@ -27,7 +36,7 @@ const FiltersGroup = props => {
 
       <p>Rating</p>
       <ul>
-        {ratingList.map(eachRating => (
+        {ratingsList.map(eachRating => (
           <li key={eachRating.ratingId}>
             <button
               type="button"
